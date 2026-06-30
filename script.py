@@ -11,7 +11,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import spacy
 
-
 nlp = spacy.load("pt_core_news_sm")
 
 st.header("Angels V2 LLM")
