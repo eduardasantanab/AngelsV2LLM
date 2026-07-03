@@ -128,16 +128,19 @@ def carregar_base():
 
     docs_divididos = splitter.split_documents(docs)
 
-    # Pré-processa chunks
-    for doc in docs_divididos:
-        doc.page_content = preprocessar_texto(
-            doc.page_content
-        )
 
     # Corpus textual
-    corpus = [
+    corpus_original = [
         doc.page_content
         for doc in docs_divididos
+    ]
+
+    corpus_processado = [
+
+        preprocessar_texto(doc.page_content)
+
+        for doc in docs_divididos
+
     ]
 
     # TF-IDF
@@ -147,14 +150,14 @@ def carregar_base():
         max_df=0.95
     )
 
-    matriz_tfidf = tfidf.fit_transform(corpus)
+    matriz_tfidf = tfidf.fit_transform(corpus_processado)
 
     # Sentence transformer
     modelo_bert = SentenceTransformer(
         "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
     )
 
-    embeddings_chunks = modelo_bert.encode(corpus)
+    embeddings_chunks = modelo_bert.encode(corpus_processado)
 
     embeddings_np = np.array(
         embeddings_chunks,
@@ -171,17 +174,25 @@ def carregar_base():
 
     # Retorna tudo
     return (
-        corpus,
+        corpus_original,
+        corpus_processado,
         tfidf,
         matriz_tfidf,
-        dimensao,
         modelo_bert,
         embeddings_np,
         index,
         docs_divididos
     )
-
-rcorpus, rtfidf, rmatriz_tfidf, rdimensao, rmodelo_bert, rembeddings_np, rindex, rdocs_divididos = carregar_base()
+(
+    rcorpus_original,
+    rcorpus_processado,
+    rtfidf,
+    rmatriz_tfidf,
+    rmodelo_bert,
+    rembeddings_np,
+    rindex,
+    rdocs_divididos
+) = carregar_base()
 
 mostrar_chunks = st.checkbox("Mostrar todos os chunks (Debug)")
 
@@ -207,8 +218,8 @@ def recuperar_chunks(pergunta):
     # Top 20 lexical
     top_indices = similaridades.argsort()[-20:][::-1]
 
-    subcorpus = [
-        rcorpus[int(i)]
+    subcorpus_original = [
+        rcorpus_original[int(i)]
         for i in top_indices
     ]
 
@@ -246,7 +257,7 @@ def recuperar_chunks(pergunta):
         print(indice, score)
 
     chunks_relevantes = [
-        subcorpus[int(i)]
+        subcorpus_original[int(i)]
         for i in indices_finais
     ]
 
@@ -376,11 +387,27 @@ if user_input:
 dataset_teste = [
 
     {
+        "pergunta": "Como devo planejar uma gestação?",
+        "resposta_esperada": """
+      ABORDAGEM PRÉ-CONCEPCIONAL Orientação nutricional visando a adequação, em tempo oportuno...
+      """,
+        "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]
+    },
+
+    {
+        "pergunta": "Vacinação em dia é necessário na fase adulta?",
+        "resposta_esperada": """
+        Calendário Nacional de Vacinação da Pessoa Adulta VACINA ESQUEMA BÁSICO REFORÇO IDADE RECOMENDADA...
+        """,
+        "chunks_esperados": [65, 66, 67, 68, 69, 385]
+    },
+
+    {
         "pergunta": "O que é o pré-natal?",
         "resposta_esperada": """
         O exame pré-natal é um procedimento médico fundamental para avaliar a saúde da gestante e do feto durante a gestação....
         """,
-        "chunks_esperados": [10, 11]
+        "chunks_esperados": [29, 30, 32, 33, 91]
     },
 
     {
@@ -388,15 +415,31 @@ dataset_teste = [
         "resposta_esperada": """
         O pré-natal deve ser iniciado preferencialmente até a 12ª semana...
         """,
-        "chunks_esperados": [15]
+        "chunks_esperados": [70, 71, 72, 73, 74, 75, 76, 77, 85]
     },
 
     {
-        "pergunta": "Quantas consultas devem ser realizadas?",
+        "pergunta": "Qual a frequência de consultas pré-natal durante a gestação?",
         "resposta_esperada": """
-        Recomenda-se no mínimo seis consultas durante a gestação...
+         O Ministério da Saúde recomenda um número mínimo de seis consultas de pré- natal....
         """,
-        "chunks_esperados": [20]
+        "chunks_esperados": [85, 86, 87]
+    },
+
+    {
+        "pergunta": "O que é planejamento reprodutivo?",
+        "resposta_esperada": """
+        Direitos sexuais e reprodutivos são direitos humanos, que devem ser assegurados sem distinção de situação social, raça, cor, etnia, nacionalidade, cultura, religião, gênero, orientação sexual ou outro....
+        """,
+        "chunks_esperados": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 399]
+    },
+
+    {
+        "pergunta": "É preciso fazer pré-natal no puerpério?",
+        "resposta_esperada": """
+         Consulta de puerpério: O período de realização da 1ª consulta após o parto ...
+        """,
+        "chunks_esperados": [94, 95, 96]
     }
 
 ]
@@ -473,7 +516,7 @@ if st.button("Avaliar Modelo"):
         lista_recall = []
         lista_jaccard = []
         lista_bertscore = []
-
+        lista_f1 = []
 
         for exemplo in dataset_teste:
 
@@ -497,9 +540,10 @@ if st.button("Avaliar Modelo"):
             else:
                 f1 = 2 * precision * recall / (precision + recall)
 
-            lista_f1 = []
             lista_f1.append(f1)
+
             f1_medio = np.mean(lista_f1)
+
             st.metric("F1-Score", f"{f1_medio:.3f}")
 
             jac = jaccard(
@@ -538,6 +582,7 @@ if st.button("Avaliar Modelo"):
     recall_medio = np.mean(lista_recall)
     jaccard_medio = np.mean(lista_jaccard)
     bertscore_medio = np.mean(lista_bertscore)
+    f1_medio = np.mean(lista_f1)
 
     st.subheader("Resultados da Avaliação")
 
@@ -546,6 +591,7 @@ if st.button("Avaliar Modelo"):
     with col1:
         st.metric("Precision", f"{precision_media:.3f}")
         st.metric("Recall", f"{recall_medio:.3f}")
+        st.metric("F1-Score", f"{f1_medio:.3f}")
 
     with col2:
         st.metric("Jaccard", f"{jaccard_medio:.3f}")
