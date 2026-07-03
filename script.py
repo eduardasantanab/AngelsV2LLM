@@ -384,7 +384,6 @@ if user_input:
 # Entrega final: Métricas de avaliação de desempenho.
 
 dataset_teste = [
-
     {
         "id": "Q01",
         "pergunta": "Quando o pré-natal deve ser iniciado?",
@@ -392,6 +391,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Início do Pré-Natal",
+        "dificuldade": "Fácil",
         "observacao": "Resposta concentrada no protocolo de início precoce do pré-natal (até a 12ª semana de gestação)."
     },
 
@@ -402,6 +403,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Consultas Pré-Natal",
+        "dificuldade": "Fácil",
         "observacao": "Resposta referente ao número mínimo de consultas recomendado pelo Ministério da Saúde."
     },
 
@@ -412,6 +415,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Estratificação de Risco",
+        "dificuldade": "Média",
         "observacao": "Avalia se o modelo recupera corretamente o protocolo de estratificação de risco durante o acompanhamento pré-natal."
     },
 
@@ -422,6 +427,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Exames Laboratoriais",
+        "dificuldade": "Média",
         "observacao": "Resposta relacionada aos testes rápidos recomendados no protocolo assistencial."
     },
 
@@ -432,6 +439,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Vacinação",
+        "dificuldade": "Média",
         "observacao": "Verifica se o sistema recupera corretamente as recomendações de imunização da gestante."
     },
 
@@ -442,6 +451,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Diabetes Gestacional",
+        "dificuldade": "Média",
         "observacao": "Resposta referente ao período gestacional indicado para realização do TOTG."
     },
 
@@ -452,6 +463,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Diabetes Gestacional",
+        "dificuldade": "Difícil",
         "observacao": "Resposta baseada na tabela com os valores diagnósticos de glicemia."
     },
 
@@ -462,6 +475,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Exames Laboratoriais",
+        "dificuldade": "Difícil",
         "observacao": "Avalia a recuperação do protocolo de encaminhamento para pré-natal de alto risco."
     },
 
@@ -472,6 +487,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Puerpério",
+        "dificuldade": "Média",
         "observacao": "Resposta relacionada às orientações do puerpério imediato e da visita pós-parto."
     },
 
@@ -482,6 +499,8 @@ dataset_teste = [
         "resposta_esperada": "",
         "chunks_esperados": [],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Estratificação de Risco",
+        "dificuldade": "Média",
         "observacao": "Verifica se o modelo explica corretamente o objetivo da estratificação de risco durante o pré-natal."
     },
 
@@ -494,6 +513,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Planejamento Reprodutivo",
+        "dificuldade": "Difícil",
         "observacao": "Avalia recuperação de informações sobre planejamento pré-concepcional."
     },
 
@@ -506,6 +527,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [65, 66, 67, 68, 69, 385],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Vacinação",
+        "dificuldade": "Média",
         "observacao": "Avalia recuperação da tabela e recomendações de vacinação."
     },
 
@@ -518,6 +541,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [29, 30, 32, 33, 91],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Consultas Pré-Natal",
+        "dificuldade": "Média",
         "observacao": "Avalia a recuperação da definição e dos objetivos da consulta pré-natal."
     },
 
@@ -530,6 +555,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [70, 71, 72, 73, 74, 75, 76, 77, 85],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Início do Pré-Natal",
+        "dificuldade": "Fácil",
         "observacao": "Avalia a recuperação da recomendação de início precoce do pré-natal."
     },
 
@@ -542,6 +569,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [85, 86, 87],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Consultas Pré-Natal",
+        "dificuldade": "Fácil",
         "observacao": "Avalia recuperação da periodicidade mínima das consultas."
     },
 
@@ -554,6 +583,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 399],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Planejamento Reprodutivo",
+        "dificuldade": "Difícil",
         "observacao": "Avalia recuperação dos conceitos e direitos relacionados ao planejamento reprodutivo."
     },
 
@@ -566,6 +597,8 @@ dataset_teste = [
         """,
         "chunks_esperados": [94, 95, 96],
         "fonte": "APS_Pre_Natal.pdf",
+        "categoria": "Puerpério",
+        "dificuldade": "Média",
         "observacao": "Avalia recuperação das recomendações referentes ao acompanhamento puerperal."
     }
 ]
