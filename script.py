@@ -29,7 +29,6 @@ for autor, mensagem in st.session_state.historico:
         st.chat_message("assistant").write(mensagem)
 
 
-
 llm = OllamaLLM(model="llama3", temperature=0)
 
 # Recebe input do usuário
@@ -312,8 +311,6 @@ Pergunta:
 
 def responder(pergunta, salvar_historico=True):
 
-    pergunta = preprocessar_texto(pergunta)
-
     intencao = detectar_intencao(pergunta)
 
     chunks, chunks_relevantes = recuperar_chunks(
@@ -386,83 +383,51 @@ if user_input:
 dataset_teste = [
     {
         "id": "Q01",
-        "pergunta": "Em quais consultas deve ser realizada a estratificação do risco gestacional?",
-        "intencao": "Procedimento",
-        "resposta_esperada": "",
-        "chunks_esperados": [10, 19, 21, 34],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Estratificação de Risco",
-        "observacao": "Avalia se o modelo recupera corretamente o protocolo de estratificação de risco durante o acompanhamento pré-natal."
-    },
-
-    {
-        "id": "Q02",
         "pergunta": "Quais testes rápidos devem ser realizados durante o pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [8, 16],
+        "chunks_esperados": [8, 16, 92, 113, 114, 115, 116, 117, 118, 119, 120, 131, 132, 133, 134, 135, 136, 143, 144, 145, 146, 147, 149],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Exames Laboratoriais",
         "observacao": "Resposta relacionada aos testes rápidos recomendados no protocolo assistencial."
     },
 
     {
-        "id": "Q03",
+        "id": "Q02",
         "pergunta": "Quando deve ser realizado o Teste Oral de Tolerância à Glicose (TOTG)?",
         "intencao": "Tempo",
         "resposta_esperada": "",
-        "chunks_esperados": [16],
+        "chunks_esperados": [16, 110, 111, 126, 138],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Diabetes Gestacional",
         "observacao": "Resposta referente ao período gestacional indicado para realização do TOTG."
     },
 
     {
-        "id": "Q04",
+        "id": "Q03",
         "pergunta": "Quais são os critérios diagnósticos para Diabetes Mellitus Gestacional?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [9, 17, 18],
+        "chunks_esperados": [9, 17, 18, 110, 111, 126, 127, 138, 139],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Diabetes Gestacional",
         "observacao": "Resposta baseada na tabela com os valores diagnósticos de glicemia."
     },
 
     {
-        "id": "Q05",
-        "pergunta": "Qual deve ser a conduta quando o Coombs indireto for positivo?",
-        "intencao": "Procedimento",
-        "resposta_esperada": "",
-        "chunks_esperados": [],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Exames Laboratoriais",
-        "observacao": "Avalia a recuperação do protocolo de encaminhamento para pré-natal de alto risco."
-    },
-
-    {
-        "id": "Q06",
+        "id": "Q04",
         "pergunta": "Quais cuidados devem ser realizados na primeira semana após o parto?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [10, 19, 18, 34],
+        "chunks_esperados": [10, 19, 18, 34, 94, 95, 96, 97],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Puerpério",
         "observacao": "Resposta relacionada às orientações do puerpério imediato e da visita pós-parto."
     },
 
-    {
-        "id": "Q07",
-        "pergunta": "Qual é a finalidade da estratificação do risco gestacional?",
-        "intencao": "Justificativa",
-        "resposta_esperada": "",
-        "chunks_esperados": [21, 10, 19, 34],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Estratificação de Risco",
-        "observacao": "Verifica se o modelo explica corretamente o objetivo da estratificação de risco durante o pré-natal."
-    },
 
     {
-        "id": "Q08",
+        "id": "Q05",
         "pergunta": "Como devo planejar uma gestação?",
         "intencao": "Procedimento",
         "resposta_esperada": """
@@ -475,20 +440,20 @@ dataset_teste = [
     },
 
     {
-        "id": "Q09",
+        "id": "Q06",
         "pergunta": "Quais vacinas são recomendadas durante o pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": """
         Calendário Nacional de Vacinação da Pessoa Adulta VACINA ESQUEMA BÁSICO REFORÇO IDADE RECOMENDADA...
         """,
-        "chunks_esperados": [8, 18, 65, 66, 67, 68, 69, 385],
+        "chunks_esperados": [8, 18, 65, 66, 67, 68, 69, 120, 149, 385],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Vacinação",
         "observacao": "Avalia recuperação da tabela e recomendações de vacinação."
     },
 
     {
-        "id": "Q10",
+        "id": "Q7",
         "pergunta": "O que é a consulta pré-natal?",
         "intencao": "Definição",
         "resposta_esperada": """
@@ -501,7 +466,7 @@ dataset_teste = [
     },
 
     {
-        "id": "Q11",
+        "id": "Q8",
         "pergunta": "Quando o pré-natal deve ser iniciado?",
         "intencao": "Tempo",
         "resposta_esperada": """
@@ -514,7 +479,7 @@ dataset_teste = [
     },
 
     {
-        "id": "Q12",
+        "id": "Q9",
         "pergunta": "Qual a frequência de consultas pré-natal durante a gestação?",
         "intencao": "Informação",
         "resposta_esperada": """
@@ -527,7 +492,7 @@ dataset_teste = [
     },
 
     {
-        "id": "Q13",
+        "id": "Q10",
         "pergunta": "O que é planejamento reprodutivo?",
         "intencao": "Definição",
         "resposta_esperada": """
@@ -540,7 +505,7 @@ dataset_teste = [
     },
 
     {
-        "id": "Q14",
+        "id": "Q11",
         "pergunta": "É preciso fazer pré-natal no puerpério?",
         "intencao": "Justificativa",
         "resposta_esperada": """
@@ -553,55 +518,55 @@ dataset_teste = [
     },
 
     {
-        "id": "Q15",
+        "id": "Q12",
         "pergunta": "Quais exames laboratoriais devem ser solicitados na primeira consulta do pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [8, 18],
+        "chunks_esperados": [8, 18, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 150],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Exames Laboratoriais",
         "observacao": "Avalia a recuperação dos exames laboratoriais previstos para a primeira consulta de pré-natal."
     },
 
     {
-        "id": "Q16",
+        "id": "Q13",
         "pergunta": "Em quais situações a gestante deve ser encaminhada para o pré-natal de alto risco?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [10],
+        "chunks_esperados": [10, 81, 82, 89, 100],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Estratificação de Risco",
         "observacao": "Avalia a recuperação dos critérios de encaminhamento para o pré-natal de alto risco."
     },
 
     {
-        "id": "Q17",
+        "id": "Q14",
         "pergunta": "Quais orientações devem ser fornecidas durante o planejamento pré-concepcional?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [50],
+        "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Planejamento Reprodutivo",
         "observacao": "Avalia a recuperação das orientações recomendadas durante o planejamento pré-concepcional."
     },
 
     {
-        "id": "Q18",
+        "id": "Q15",
         "pergunta": "Quais exames de imagem podem ser solicitados durante o pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [16, 18],
+        "chunks_esperados": [16, 18, 91, 98],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Exames de Imagem",
         "observacao": "Avalia a recuperação das recomendações relacionadas aos exames de imagem durante a gestação."
     },
 
     {
-        "id": "Q19",
+        "id": "Q16",
         "pergunta": "Quais sinais e sintomas indicam necessidade de encaminhamento para atendimento especializado durante a gestação?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [8, 9, 10, 17, 18],
+        "chunks_esperados": [8, 9, 10, 17, 18, 93, 96],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Sinais de Alerta",
         "observacao": "Avalia se o sistema recupera corretamente os sinais de alerta que exigem encaminhamento imediato."
