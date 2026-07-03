@@ -389,7 +389,7 @@ dataset_teste = [
         "pergunta": "Em quais consultas deve ser realizada a estratificação do risco gestacional?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [10, 19, 21, 34],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Estratificação de Risco",
         "observacao": "Avalia se o modelo recupera corretamente o protocolo de estratificação de risco durante o acompanhamento pré-natal."
@@ -400,7 +400,7 @@ dataset_teste = [
         "pergunta": "Quais testes rápidos devem ser realizados durante o pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [8, 16],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Exames Laboratoriais",
         "observacao": "Resposta relacionada aos testes rápidos recomendados no protocolo assistencial."
@@ -411,7 +411,7 @@ dataset_teste = [
         "pergunta": "Quando deve ser realizado o Teste Oral de Tolerância à Glicose (TOTG)?",
         "intencao": "Tempo",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [16],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Diabetes Gestacional",
         "observacao": "Resposta referente ao período gestacional indicado para realização do TOTG."
@@ -422,7 +422,7 @@ dataset_teste = [
         "pergunta": "Quais são os critérios diagnósticos para Diabetes Mellitus Gestacional?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [9, 17, 18],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Diabetes Gestacional",
         "observacao": "Resposta baseada na tabela com os valores diagnósticos de glicemia."
@@ -444,7 +444,7 @@ dataset_teste = [
         "pergunta": "Quais cuidados devem ser realizados na primeira semana após o parto?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [10, 19, 18, 34],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Puerpério",
         "observacao": "Resposta relacionada às orientações do puerpério imediato e da visita pós-parto."
@@ -455,7 +455,7 @@ dataset_teste = [
         "pergunta": "Qual é a finalidade da estratificação do risco gestacional?",
         "intencao": "Justificativa",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [21, 10, 19, 34],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Estratificação de Risco",
         "observacao": "Verifica se o modelo explica corretamente o objetivo da estratificação de risco durante o pré-natal."
@@ -481,7 +481,7 @@ dataset_teste = [
         "resposta_esperada": """
         Calendário Nacional de Vacinação da Pessoa Adulta VACINA ESQUEMA BÁSICO REFORÇO IDADE RECOMENDADA...
         """,
-        "chunks_esperados": [65, 66, 67, 68, 69, 385],
+        "chunks_esperados": [8, 18, 65, 66, 67, 68, 69, 385],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Vacinação",
         "observacao": "Avalia recuperação da tabela e recomendações de vacinação."
@@ -507,7 +507,7 @@ dataset_teste = [
         "resposta_esperada": """
         O pré-natal deve ser iniciado preferencialmente até a 12ª semana...
         """,
-        "chunks_esperados": [70, 71, 72, 73, 74, 75, 76, 77, 85],
+        "chunks_esperados": [29, 70, 71, 72, 73, 74, 75, 76, 77, 85],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Início do Pré-Natal",
         "observacao": "Avalia a recuperação da recomendação de início precoce do pré-natal."
@@ -520,7 +520,7 @@ dataset_teste = [
         "resposta_esperada": """
         O Ministério da Saúde recomenda um número mínimo de seis consultas de pré-natal....
         """,
-        "chunks_esperados": [85, 86, 87],
+        "chunks_esperados": [17, 85, 86, 87],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Consultas Pré-Natal",
         "observacao": "Avalia recuperação da periodicidade mínima das consultas."
@@ -546,7 +546,7 @@ dataset_teste = [
         "resposta_esperada": """
         Consulta de puerpério: O período de realização da 1ª consulta após o parto ...
         """,
-        "chunks_esperados": [94, 95, 96],
+        "chunks_esperados": [21, 28, 94, 95, 96],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Puerpério",
         "observacao": "Avalia recuperação das recomendações referentes ao acompanhamento puerperal."
@@ -557,7 +557,7 @@ dataset_teste = [
         "pergunta": "Quais exames laboratoriais devem ser solicitados na primeira consulta do pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [8, 18],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Exames Laboratoriais",
         "observacao": "Avalia a recuperação dos exames laboratoriais previstos para a primeira consulta de pré-natal."
@@ -568,7 +568,7 @@ dataset_teste = [
         "pergunta": "Em quais situações a gestante deve ser encaminhada para o pré-natal de alto risco?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [10],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Estratificação de Risco",
         "observacao": "Avalia a recuperação dos critérios de encaminhamento para o pré-natal de alto risco."
@@ -579,7 +579,7 @@ dataset_teste = [
         "pergunta": "Quais orientações devem ser fornecidas durante o planejamento pré-concepcional?",
         "intencao": "Procedimento",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [50],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Planejamento Reprodutivo",
         "observacao": "Avalia a recuperação das orientações recomendadas durante o planejamento pré-concepcional."
@@ -590,7 +590,7 @@ dataset_teste = [
         "pergunta": "Quais exames de imagem podem ser solicitados durante o pré-natal?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [16, 18],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Exames de Imagem",
         "observacao": "Avalia a recuperação das recomendações relacionadas aos exames de imagem durante a gestação."
@@ -601,7 +601,7 @@ dataset_teste = [
         "pergunta": "Quais sinais e sintomas indicam necessidade de encaminhamento para atendimento especializado durante a gestação?",
         "intencao": "Informação",
         "resposta_esperada": "",
-        "chunks_esperados": [],
+        "chunks_esperados": [8, 9, 10, 17, 18],
         "fonte": "APS_Pre_Natal.pdf",
         "categoria": "Sinais de Alerta",
         "observacao": "Avalia se o sistema recupera corretamente os sinais de alerta que exigem encaminhamento imediato."
