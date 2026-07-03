@@ -10,7 +10,6 @@ import faiss
 from bert_score import score
 import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
-import os
 import numpy as np
 import spacy
 
@@ -387,61 +386,188 @@ if user_input:
 dataset_teste = [
 
     {
-        "pergunta": "Como devo planejar uma gestação?",
-        "resposta_esperada": """
-      ABORDAGEM PRÉ-CONCEPCIONAL Orientação nutricional visando a adequação, em tempo oportuno...
-      """,
-        "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]
+        "id": "Q01",
+        "pergunta": "Quando o pré-natal deve ser iniciado?",
+        "intencao": "Tempo",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Resposta concentrada no protocolo de início precoce do pré-natal (até a 12ª semana de gestação)."
     },
 
     {
+        "id": "Q02",
+        "pergunta": "Quantas consultas mínimas devem ser realizadas durante o pré-natal?",
+        "intencao": "Informação",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Resposta referente ao número mínimo de consultas recomendado pelo Ministério da Saúde."
+    },
+
+    {
+        "id": "Q03",
+        "pergunta": "Em quais consultas deve ser realizada a estratificação do risco gestacional?",
+        "intencao": "Procedimento",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia se o modelo recupera corretamente o protocolo de estratificação de risco durante o acompanhamento pré-natal."
+    },
+
+    {
+        "id": "Q04",
+        "pergunta": "Quais testes rápidos devem ser realizados durante o pré-natal?",
+        "intencao": "Informação",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Resposta relacionada aos testes rápidos recomendados no protocolo assistencial."
+    },
+
+    {
+        "id": "Q05",
         "pergunta": "Quais vacinas são recomendadas durante o pré-natal?",
+        "intencao": "Informação",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Verifica se o sistema recupera corretamente as recomendações de imunização da gestante."
+    },
+
+    {
+        "id": "Q06",
+        "pergunta": "Quando deve ser realizado o Teste Oral de Tolerância à Glicose (TOTG)?",
+        "intencao": "Tempo",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Resposta referente ao período gestacional indicado para realização do TOTG."
+    },
+
+    {
+        "id": "Q07",
+        "pergunta": "Quais são os critérios diagnósticos para Diabetes Mellitus Gestacional?",
+        "intencao": "Informação",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Resposta baseada na tabela com os valores diagnósticos de glicemia."
+    },
+
+    {
+        "id": "Q08",
+        "pergunta": "Qual deve ser a conduta quando o Coombs indireto for positivo?",
+        "intencao": "Procedimento",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia a recuperação do protocolo de encaminhamento para pré-natal de alto risco."
+    },
+
+    {
+        "id": "Q09",
+        "pergunta": "Quais cuidados devem ser realizados na primeira semana após o parto?",
+        "intencao": "Procedimento",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Resposta relacionada às orientações do puerpério imediato e da visita pós-parto."
+    },
+
+    {
+        "id": "Q10",
+        "pergunta": "Qual é a finalidade da estratificação do risco gestacional?",
+        "intencao": "Justificativa",
+        "resposta_esperada": "",
+        "chunks_esperados": [],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Verifica se o modelo explica corretamente o objetivo da estratificação de risco durante o pré-natal."
+    },
+
+    {
+        "id": "Q11",
+        "pergunta": "Como devo planejar uma gestação?",
+        "intencao": "Procedimento",
+        "resposta_esperada": """
+        ABORDAGEM PRÉ-CONCEPCIONAL Orientação nutricional visando a adequação, em tempo oportuno...
+        """,
+        "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia recuperação de informações sobre planejamento pré-concepcional."
+    },
+
+    {
+        "id": "Q12",
+        "pergunta": "Quais vacinas são recomendadas durante o pré-natal?",
+        "intencao": "Informação",
         "resposta_esperada": """
         Calendário Nacional de Vacinação da Pessoa Adulta VACINA ESQUEMA BÁSICO REFORÇO IDADE RECOMENDADA...
         """,
-        "chunks_esperados": [65, 66, 67, 68, 69, 385]
+        "chunks_esperados": [65, 66, 67, 68, 69, 385],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia recuperação da tabela e recomendações de vacinação."
     },
 
     {
+        "id": "Q13",
         "pergunta": "O que é a consulta pré-natal?",
+        "intencao": "Definição",
         "resposta_esperada": """
         O exame pré-natal é um procedimento médico fundamental para avaliar a saúde da gestante e do feto durante a gestação....
         """,
-        "chunks_esperados": [29, 30, 32, 33, 91]
+        "chunks_esperados": [29, 30, 32, 33, 91],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia a recuperação da definição e dos objetivos da consulta pré-natal."
     },
 
     {
+        "id": "Q14",
         "pergunta": "Quando iniciar o pré-natal?",
+        "intencao": "Tempo",
         "resposta_esperada": """
         O pré-natal deve ser iniciado preferencialmente até a 12ª semana...
         """,
-        "chunks_esperados": [70, 71, 72, 73, 74, 75, 76, 77, 85]
+        "chunks_esperados": [70, 71, 72, 73, 74, 75, 76, 77, 85],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia a recuperação da recomendação de início precoce do pré-natal."
     },
 
     {
+        "id": "Q15",
         "pergunta": "Qual a frequência de consultas pré-natal durante a gestação?",
+        "intencao": "Informação",
         "resposta_esperada": """
-         O Ministério da Saúde recomenda um número mínimo de seis consultas de pré- natal....
+        O Ministério da Saúde recomenda um número mínimo de seis consultas de pré-natal....
         """,
-        "chunks_esperados": [85, 86, 87]
+        "chunks_esperados": [85, 86, 87],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia recuperação da periodicidade mínima das consultas."
     },
 
     {
+        "id": "Q16",
         "pergunta": "O que é planejamento reprodutivo?",
+        "intencao": "Definição",
         "resposta_esperada": """
         Direitos sexuais e reprodutivos são direitos humanos, que devem ser assegurados sem distinção de situação social, raça, cor, etnia, nacionalidade, cultura, religião, gênero, orientação sexual ou outro....
         """,
-        "chunks_esperados": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 399]
+        "chunks_esperados": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 399],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia recuperação dos conceitos e direitos relacionados ao planejamento reprodutivo."
     },
 
     {
+        "id": "Q17",
         "pergunta": "É preciso fazer pré-natal no puerpério?",
+        "intencao": "Justificativa",
         "resposta_esperada": """
-         Consulta de puerpério: O período de realização da 1ª consulta após o parto ...
+        Consulta de puerpério: O período de realização da 1ª consulta após o parto ...
         """,
-        "chunks_esperados": [94, 95, 96]
+        "chunks_esperados": [94, 95, 96],
+        "fonte": "APS_Pre_Natal.pdf",
+        "observacao": "Avalia recuperação das recomendações referentes ao acompanhamento puerperal."
     }
-
 ]
 
 def calcular_precision(recuperados, esperados):
