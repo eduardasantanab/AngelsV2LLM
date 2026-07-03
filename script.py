@@ -215,8 +215,8 @@ def recuperar_chunks(pergunta):
         rmatriz_tfidf
     ).flatten()
 
-    # Top 20 lexical
-    top_indices = similaridades.argsort()[-20:][::-1]
+    # Top 50 lexical
+    top_indices = similaridades.argsort()[-50:][::-1]
 
     subcorpus_original = [
         rcorpus_original[int(i)]
@@ -243,7 +243,7 @@ def recuperar_chunks(pergunta):
         embedding_pergunta.T
     ).flatten()
 
-    indices_finais = similaridade_semantica.argsort()[-5:][::-1]
+    indices_finais = similaridade_semantica.argsort()[-10:][::-1]
 
     chunks_recuperados = [
         int(top_indices[i])
@@ -395,7 +395,7 @@ dataset_teste = [
     },
 
     {
-        "pergunta": "Vacinação em dia é necessário na fase adulta?",
+        "pergunta": "Quais vacinas são recomendadas durante o pré-natal?",
         "resposta_esperada": """
         Calendário Nacional de Vacinação da Pessoa Adulta VACINA ESQUEMA BÁSICO REFORÇO IDADE RECOMENDADA...
         """,
@@ -403,7 +403,7 @@ dataset_teste = [
     },
 
     {
-        "pergunta": "O que é o pré-natal?",
+        "pergunta": "O que é a consulta pré-natal?",
         "resposta_esperada": """
         O exame pré-natal é um procedimento médico fundamental para avaliar a saúde da gestante e do feto durante a gestação....
         """,
