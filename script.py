@@ -7,7 +7,10 @@ import unicodedata
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import faiss
+from bert_score import score
+import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
+import os
 import numpy as np
 import spacy
 
@@ -18,11 +21,21 @@ st.header("Angels V2 LLM")
 if "historico" not in st.session_state:
     st.session_state.historico = []
 
+for autor, mensagem in st.session_state.historico:
+
+    if autor == "Usuário":
+        st.chat_message("user").write(mensagem)
+
+    else:
+        st.chat_message("assistant").write(mensagem)
+
+
+
 llm = OllamaLLM(model="llama3", temperature=0)
 
 # Recebe input do usuário
 
-user_input = st.text_input("Faça a sua pergunta:")
+user_input = st.chat_input("Faça sua pergunta")
 
 # Pré-processamento para a base e para o input do usuário
 
@@ -69,12 +82,38 @@ def preprocessar_texto(texto):
     return " ".join(tokens_processados)
 
 
+def detectar_intencao(pergunta):
+
+    pergunta = pergunta.lower()
+
+    if "o que é" in pergunta:
+        return "Definição"
+
+    elif "como" in pergunta:
+        return "Procedimento"
+
+    elif "quando" in pergunta:
+        return "Tempo"
+
+    elif "por que" in pergunta:
+        return "Justificativa"
+
+    elif "qual" in pergunta:
+        return "Informação"
+
+    elif "sintoma" in pergunta:
+        return "Sintomas"
+
+    return "Geral"
+
+
 # Pré-processamento para a base e para o input do usuário
 
 @st.cache_resource
 def carregar_base():
 
     # Carrega PDFs
+
     loader = PyPDFLoader(
         "Dataset/APS_Pre_Natal.pdf"
     )
@@ -144,20 +183,28 @@ def carregar_base():
 
 rcorpus, rtfidf, rmatriz_tfidf, rdimensao, rmodelo_bert, rembeddings_np, rindex, rdocs_divididos = carregar_base()
 
+mostrar_chunks = st.checkbox("Mostrar todos os chunks (Debug)")
 
-# Injeção no prompt
+if mostrar_chunks:
 
-if user_input:
-    user_input = preprocessar_texto(user_input)
+    for i, doc in enumerate(rdocs_divididos):
 
-    vetor_pergunta = rtfidf.transform([user_input])
+        st.markdown(f"### Chunk {i}")
+
+        st.write(doc.page_content)
+
+        st.divider()
+
+def recuperar_chunks(pergunta):
+
+    vetor_pergunta = rtfidf.transform([pergunta])
 
     similaridades = cosine_similarity(
         vetor_pergunta,
         rmatriz_tfidf
     ).flatten()
 
-    # Busca similaridade (top-20 chunks)
+    # Top 20 lexical
     top_indices = similaridades.argsort()[-20:][::-1]
 
     subcorpus = [
@@ -169,16 +216,16 @@ if user_input:
 
     faiss.normalize_L2(embeddings_subcorpus)
 
-    rdimensao = embeddings_subcorpus.shape[1]
-
     embedding_pergunta = rmodelo_bert.encode(
-        [user_input]
+        [pergunta]
     )
 
     embedding_pergunta = np.array(
         embedding_pergunta,
         dtype=np.float32
     )
+
+    faiss.normalize_L2(embedding_pergunta)
 
     similaridade_semantica = np.dot(
         embeddings_subcorpus,
@@ -187,59 +234,389 @@ if user_input:
 
     indices_finais = similaridade_semantica.argsort()[-5:][::-1]
 
-    faiss.normalize_L2(embedding_pergunta)
+    chunks_recuperados = [
+        int(top_indices[i])
+        for i in indices_finais
+    ]
+
+    print("Chunks recuperados:", chunks_recuperados)
+
+    for indice, score in zip(chunks_recuperados,
+                             similaridade_semantica[indices_finais]):
+        print(indice, score)
 
     chunks_relevantes = [
         subcorpus[int(i)]
         for i in indices_finais
     ]
 
-    # Monta contexto (com base nos chunks encontrados) - Generation
-    contexto = "\n".join(chunks_relevantes)
+    return chunks_recuperados, chunks_relevantes
 
-    historico_texto = ""
+
+def montar_contexto(chunks_relevantes):
+
+    return "\n".join(chunks_relevantes)
+
+def gerar_prompt(
+        pergunta,
+        contexto,
+        historico,
+        intencao
+):
+
+    return f"""
+Você é um assistente virtual especializado em protocolos clínicos gestacionais.
+
+Sua tarefa é responder EXATAMENTE ao que foi perguntado.
+
+Regras:
+
+- Responda apenas com base no contexto fornecido.
+- Não invente informações.
+- Identifique a intenção da pergunta antes de responder.
+- Se a pergunta pedir definição, explique o que é.
+- Se pedir procedimento, explique como é feito.
+- Se pedir importância, explique a finalidade.
+- Não responda "sim" ou "não" sem explicação.
+- Responda de forma objetiva, clara e coerente com a pergunta.
+
+Histórico:
+
+{historico}
+
+Contexto:
+
+{contexto}
+
+Tipo da pergunta:
+
+{intencao}
+
+Pergunta:
+
+{pergunta}
+"""
+
+
+# Injeção no prompt
+
+def responder(pergunta, salvar_historico=True):
+
+    pergunta = preprocessar_texto(pergunta)
+
+    intencao = detectar_intencao(pergunta)
+
+    chunks, chunks_relevantes = recuperar_chunks(
+        pergunta
+    )
+
+    contexto = montar_contexto(
+        chunks_relevantes
+    )
+
+    historico = ""
 
     for autor, mensagem in st.session_state.historico[-6:]:
-        historico_texto += f"{autor}: {mensagem}\n"
 
-    # Prompt
-    prompt = f"""
-    Você é um assistente virtual especializado em protocolos clínicos gestacionais.
+        historico += f"{autor}: {mensagem}\n"
 
-    Sua tarefa é responder EXATAMENTE ao que foi perguntado.
+    prompt = gerar_prompt(
+        pergunta,
+        contexto,
+        historico,
+        intencao
+    )
 
-    Regras:
-    - Responda apenas com base no contexto fornecido.
-    - Não invente informações.
-    - Identifique a intenção da pergunta antes de responder.
-    - Se a pergunta pedir definição, explique o que é.
-    - Se pedir procedimento, explique como é feito.
-    - Se pedir importância, explique a finalidade.
-    - Não responda "sim" ou "não" sem explicação.
-    - Responda de forma objetiva, clara e coerente com a pergunta.
-
-    Histórico da conversa:
-    {historico_texto}
-
-    Contexto:
-    {contexto}
-
-    Pergunta atual:
-    {user_input}
-    """
-
-    # resposta
     resposta = llm.invoke(prompt)
 
-    st.session_state.historico.append(
-        ("Usuário", user_input)
+    if salvar_historico:
+
+        st.session_state.historico.append(
+            ("Usuário", pergunta)
+        )
+
+        st.session_state.historico.append(
+            ("Assistente", resposta)
+        )
+
+    return resposta, chunks
+
+
+# Conversa normal do usuário
+if user_input:
+
+    resposta, chunks = responder(user_input)
+
+    st.chat_message("assistant").write(resposta)
+
+    with st.expander("Chunks recuperados"):
+        for indice in chunks:
+            st.write(
+                "PDF:",
+                rdocs_divididos[indice].metadata["source"]
+            )
+
+            st.write(
+                rdocs_divididos[indice].page_content
+            )
+
+            st.divider()
+
+    with st.expander("Texto dos chunks"):
+
+        for i in chunks:
+            st.markdown(f"### Chunk {i}")
+
+            st.write(rdocs_divididos[i].page_content)
+
+            st.divider()
+
+# Entrega final: Métricas de avaliação de desempenho.
+
+dataset_teste = [
+
+    {
+        "pergunta": "O que é o pré-natal?",
+        "resposta_esperada": """
+        O exame pré-natal é um procedimento médico fundamental para avaliar a saúde da gestante e do feto durante a gestação....
+        """,
+        "chunks_esperados": [10, 11]
+    },
+
+    {
+        "pergunta": "Quando iniciar o pré-natal?",
+        "resposta_esperada": """
+        O pré-natal deve ser iniciado preferencialmente até a 12ª semana...
+        """,
+        "chunks_esperados": [15]
+    },
+
+    {
+        "pergunta": "Quantas consultas devem ser realizadas?",
+        "resposta_esperada": """
+        Recomenda-se no mínimo seis consultas durante a gestação...
+        """,
+        "chunks_esperados": [20]
+    }
+
+]
+
+def calcular_precision(recuperados, esperados):
+
+    recuperados = set(recuperados)
+    esperados = set(esperados)
+
+    verdadeiros_positivos = len(
+        recuperados.intersection(esperados)
     )
 
-    st.session_state.historico.append(
-        ("Assistente", resposta)
+    if len(recuperados) == 0:
+        return 0
+
+    return verdadeiros_positivos / len(recuperados)
+
+
+def calcular_recall(recuperados, esperados):
+
+    recuperados = set(recuperados)
+    esperados = set(esperados)
+
+    verdadeiros_positivos = len(
+        recuperados.intersection(esperados)
     )
 
-    st.write(resposta)
+    if len(esperados) == 0:
+        return 0
+
+    return verdadeiros_positivos / len(esperados)
 
 
-# Entrega final: Utilizar métricas de avaliação de desempenho.
+def jaccard(resposta_modelo,
+             resposta_esperada):
+
+    modelo = set(
+        resposta_modelo.lower().split()
+    )
+
+    esperado = set(
+        resposta_esperada.lower().split()
+    )
+
+    intersecao = modelo.intersection(
+        esperado
+    )
+
+    uniao = modelo.union(
+        esperado
+    )
+
+    return len(intersecao) / len(uniao)
+
+def calcular_bertscore(
+        resposta_modelo,
+        resposta_esperada
+):
+
+    P, R, F1 = score(
+        [resposta_modelo],
+        [resposta_esperada],
+        lang="pt"
+    )
+
+    return float(F1.mean())
+
+if st.button("Avaliar Modelo"):
+
+    with st.spinner("Executando avaliação..."):
+
+        lista_precision = []
+        lista_recall = []
+        lista_jaccard = []
+        lista_bertscore = []
+
+
+        for exemplo in dataset_teste:
+
+            resposta, chunks = responder(
+                exemplo["pergunta"],
+                salvar_historico=False
+            )
+
+            precision = calcular_precision(
+                chunks,
+                exemplo["chunks_esperados"]
+            )
+
+            recall = calcular_recall(
+                chunks,
+                exemplo["chunks_esperados"]
+            )
+
+            if precision + recall == 0:
+                f1 = 0
+            else:
+                f1 = 2 * precision * recall / (precision + recall)
+
+            lista_f1 = []
+            lista_f1.append(f1)
+            f1_medio = np.mean(lista_f1)
+            st.metric("F1-Score", f"{f1_medio:.3f}")
+
+            jac = jaccard(
+                resposta,
+                exemplo["resposta_esperada"]
+            )
+
+            bert = calcular_bertscore(
+                resposta,
+                exemplo["resposta_esperada"]
+            )
+
+            st.write("Pergunta:", exemplo["pergunta"])
+
+            st.write("Chunks recuperados:", chunks)
+
+            st.write("Chunks esperados:", exemplo["chunks_esperados"])
+
+            st.write("Precision:", precision)
+
+            st.write("Recall:", recall)
+
+            st.write("Jaccard:", jac)
+
+            st.write("BERTScore:", bert)
+
+            st.divider()
+
+            lista_precision.append(precision)
+            lista_recall.append(recall)
+            lista_jaccard.append(jac)
+            lista_bertscore.append(bert)
+
+
+    precision_media = np.mean(lista_precision)
+    recall_medio = np.mean(lista_recall)
+    jaccard_medio = np.mean(lista_jaccard)
+    bertscore_medio = np.mean(lista_bertscore)
+
+    st.subheader("Resultados da Avaliação")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Precision", f"{precision_media:.3f}")
+        st.metric("Recall", f"{recall_medio:.3f}")
+
+    with col2:
+        st.metric("Jaccard", f"{jaccard_medio:.3f}")
+        st.metric("BERTScore", f"{bertscore_medio:.3f}")
+
+    # Gráfico Precision x Recall
+
+    fig, ax = plt.subplots()
+
+    ax.plot(lista_precision, marker="o", label="Precision")
+    ax.plot(lista_recall, marker="o", label="Recall")
+
+    ax.legend()
+
+    st.pyplot(fig)
+
+
+    fig_precision, ax = plt.subplots(figsize=(5,4))
+
+    ax.bar(
+        ["Precision", "Recall"],
+        [precision_media, recall_medio]
+    )
+
+    ax.set_ylim(0,1)
+    ax.set_title("Eficiência do Sistema")
+
+    st.pyplot(fig_precision)
+
+
+    def calcular_f1(precision, recall):
+
+        if precision + recall == 0:
+            return 0
+
+        return (
+                2 * precision * recall
+        ) / (precision + recall)
+
+
+
+
+
+
+    # Gráfico Jaccard
+
+    fig_jaccard, ax = plt.subplots(figsize=(5,4))
+
+    ax.bar(
+        ["Jaccard"],
+        [jaccard_medio]
+    )
+
+    ax.set_ylim(0,1)
+    ax.set_title("Overlap entre Respostas")
+
+    st.pyplot(fig_jaccard)
+
+    # Gráfico BERTScore
+
+    fig_bert, ax = plt.subplots(figsize=(5,4))
+
+    ax.bar(
+        ["BERTScore"],
+        [bertscore_medio]
+    )
+
+    ax.set_ylim(0,1)
+    ax.set_title("Qualidade Semântica")
+
+    st.pyplot(fig_bert)
+
+    st.success("Avaliação concluída com sucesso.")
+
