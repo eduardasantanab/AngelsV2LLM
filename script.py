@@ -63,12 +63,12 @@ def preprocessar_texto(texto):
             continue
 
         # mantém apenas classes importantes
-        if token.pos_ not in [
-            "NOUN",
-            "PROPN",
-            "VERB",
-            "ADJ"
-        ]:
+        # if token.pos_ not in [
+        #     "NOUN",
+        #     "PROPN",
+        #     "VERB",
+        #     "ADJ"
+        # ]:
             continue
 
         # lematização
@@ -120,8 +120,8 @@ def carregar_base():
 
     # Divide em chunks
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+        chunk_size=400,
+        chunk_overlap=100
     )
 
     docs_divididos = splitter.split_documents(docs)
@@ -143,9 +143,9 @@ def carregar_base():
 
     # TF-IDF
     tfidf = TfidfVectorizer(
-        ngram_range=(1, 2),
-        min_df=2,
-        max_df=0.95
+        ngram_range=(1, 3),
+        min_df=1,
+        max_df=0.90
     )
 
     matriz_tfidf = tfidf.fit_transform(corpus_processado)
@@ -241,7 +241,7 @@ def recuperar_chunks(pergunta):
         embedding_pergunta.T
     ).flatten()
 
-    indices_finais = similaridade_semantica.argsort()[-10:][::-1]
+    indices_finais = similaridade_semantica.argsort()[-15:][::-1]
 
     chunks_recuperados = [
         int(top_indices[i])
@@ -382,194 +382,50 @@ if user_input:
 
 dataset_teste = [
     {
-        "id": "Q01",
-        "pergunta": "Quais testes rápidos devem ser realizados durante o pré-natal?",
-        "intencao": "Informação",
-        "resposta_esperada": "",
-        "chunks_esperados": [8, 16, 92, 113, 114, 115, 116, 117, 118, 119, 120, 131, 132, 133, 134, 135, 136, 143, 144, 145, 146, 147, 149],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Exames Laboratoriais",
-        "observacao": "Resposta relacionada aos testes rápidos recomendados no protocolo assistencial."
-    },
-
-    {
-        "id": "Q02",
-        "pergunta": "Quando deve ser realizado o Teste Oral de Tolerância à Glicose (TOTG)?",
-        "intencao": "Tempo",
-        "resposta_esperada": "",
-        "chunks_esperados": [16, 110, 111, 126, 138],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Diabetes Gestacional",
-        "observacao": "Resposta referente ao período gestacional indicado para realização do TOTG."
-    },
-
-    {
-        "id": "Q03",
-        "pergunta": "Quais são os critérios diagnósticos para Diabetes Mellitus Gestacional?",
-        "intencao": "Informação",
-        "resposta_esperada": "",
-        "chunks_esperados": [9, 17, 18, 110, 111, 126, 127, 138, 139],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Diabetes Gestacional",
-        "observacao": "Resposta baseada na tabela com os valores diagnósticos de glicemia."
-    },
-
-    {
-        "id": "Q04",
-        "pergunta": "Quais cuidados devem ser realizados na primeira semana após o parto?",
-        "intencao": "Procedimento",
-        "resposta_esperada": "",
-        "chunks_esperados": [10, 19, 18, 34, 94, 95, 96, 97],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Puerpério",
-        "observacao": "Resposta relacionada às orientações do puerpério imediato e da visita pós-parto."
-    },
-
-
-    {
-        "id": "Q05",
-        "pergunta": "Como devo planejar uma gestação?",
-        "intencao": "Procedimento",
-        "resposta_esperada": """
-        ABORDAGEM PRÉ-CONCEPCIONAL Orientação nutricional visando a adequação, em tempo oportuno...
-        """,
-        "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Planejamento Reprodutivo",
-        "observacao": "Avalia recuperação de informações sobre planejamento pré-concepcional."
-    },
-
-    {
-        "id": "Q06",
+        "pergunta": "Vacinação em dia é necessário na fase adulta?",
         "pergunta": "Quais vacinas são recomendadas durante o pré-natal?",
-        "intencao": "Informação",
         "resposta_esperada": """
         Calendário Nacional de Vacinação da Pessoa Adulta VACINA ESQUEMA BÁSICO REFORÇO IDADE RECOMENDADA...
         """,
-        "chunks_esperados": [8, 18, 65, 66, 67, 68, 69, 120, 149, 385],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Vacinação",
-        "observacao": "Avalia recuperação da tabela e recomendações de vacinação."
+        "chunks_esperados": [65, 66, 67, 68, 69, 385]
     },
 
     {
-        "id": "Q7",
+        "pergunta": "O que é o pré-natal?",
         "pergunta": "O que é a consulta pré-natal?",
-        "intencao": "Definição",
         "resposta_esperada": """
         O exame pré-natal é um procedimento médico fundamental para avaliar a saúde da gestante e do feto durante a gestação....
         """,
-        "chunks_esperados": [29, 30, 32, 33, 91],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Consultas Pré-Natal",
-        "observacao": "Avalia a recuperação da definição e dos objetivos da consulta pré-natal."
+        "chunks_esperados": [29, 30, 32, 33, 91]
     },
-
     {
-        "id": "Q8",
-        "pergunta": "Quando o pré-natal deve ser iniciado?",
-        "intencao": "Tempo",
+        "pergunta": "Quando iniciar o pré-natal?",
         "resposta_esperada": """
         O pré-natal deve ser iniciado preferencialmente até a 12ª semana...
         """,
-        "chunks_esperados": [29, 70, 71, 72, 73, 74, 75, 76, 77, 85],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Início do Pré-Natal",
-        "observacao": "Avalia a recuperação da recomendação de início precoce do pré-natal."
+        "chunks_esperados": [70, 71, 72, 73, 74, 75, 76, 77, 85]
     },
 
     {
-        "id": "Q9",
         "pergunta": "Qual a frequência de consultas pré-natal durante a gestação?",
-        "intencao": "Informação",
         "resposta_esperada": """
-        O Ministério da Saúde recomenda um número mínimo de seis consultas de pré-natal....
+        O Ministério da Saúde recomenda um número mínimo de seis consultas de pré- natal....
         """,
-        "chunks_esperados": [17, 85, 86, 87],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Consultas Pré-Natal",
-        "observacao": "Avalia recuperação da periodicidade mínima das consultas."
+        "chunks_esperados": [85, 86, 87, 123, 132]
     },
-
     {
-        "id": "Q10",
         "pergunta": "O que é planejamento reprodutivo?",
-        "intencao": "Definição",
         "resposta_esperada": """
         Direitos sexuais e reprodutivos são direitos humanos, que devem ser assegurados sem distinção de situação social, raça, cor, etnia, nacionalidade, cultura, religião, gênero, orientação sexual ou outro....
         """,
-        "chunks_esperados": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 399],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Planejamento Reprodutivo",
-        "observacao": "Avalia recuperação dos conceitos e direitos relacionados ao planejamento reprodutivo."
+        "chunks_esperados": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 399]
     },
-
     {
-        "id": "Q11",
         "pergunta": "É preciso fazer pré-natal no puerpério?",
-        "intencao": "Justificativa",
         "resposta_esperada": """
         Consulta de puerpério: O período de realização da 1ª consulta após o parto ...
         """,
-        "chunks_esperados": [21, 28, 94, 95, 96],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Puerpério",
-        "observacao": "Avalia recuperação das recomendações referentes ao acompanhamento puerperal."
-    },
-
-    {
-        "id": "Q12",
-        "pergunta": "Quais exames laboratoriais devem ser solicitados na primeira consulta do pré-natal?",
-        "intencao": "Informação",
-        "resposta_esperada": "",
-        "chunks_esperados": [8, 18, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 150],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Exames Laboratoriais",
-        "observacao": "Avalia a recuperação dos exames laboratoriais previstos para a primeira consulta de pré-natal."
-    },
-
-    {
-        "id": "Q13",
-        "pergunta": "Em quais situações a gestante deve ser encaminhada para o pré-natal de alto risco?",
-        "intencao": "Procedimento",
-        "resposta_esperada": "",
-        "chunks_esperados": [10, 81, 82, 89, 100],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Estratificação de Risco",
-        "observacao": "Avalia a recuperação dos critérios de encaminhamento para o pré-natal de alto risco."
-    },
-
-    {
-        "id": "Q14",
-        "pergunta": "Quais orientações devem ser fornecidas durante o planejamento pré-concepcional?",
-        "intencao": "Procedimento",
-        "resposta_esperada": "",
-        "chunks_esperados": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Planejamento Reprodutivo",
-        "observacao": "Avalia a recuperação das orientações recomendadas durante o planejamento pré-concepcional."
-    },
-
-    {
-        "id": "Q15",
-        "pergunta": "Quais exames de imagem podem ser solicitados durante o pré-natal?",
-        "intencao": "Informação",
-        "resposta_esperada": "",
-        "chunks_esperados": [16, 18, 91, 98],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Exames de Imagem",
-        "observacao": "Avalia a recuperação das recomendações relacionadas aos exames de imagem durante a gestação."
-    },
-
-    {
-        "id": "Q16",
-        "pergunta": "Quais sinais e sintomas indicam necessidade de encaminhamento para atendimento especializado durante a gestação?",
-        "intencao": "Informação",
-        "resposta_esperada": "",
-        "chunks_esperados": [8, 9, 10, 17, 18, 93, 96],
-        "fonte": "APS_Pre_Natal.pdf",
-        "categoria": "Sinais de Alerta",
-        "observacao": "Avalia se o sistema recupera corretamente os sinais de alerta que exigem encaminhamento imediato."
+        "chunks_esperados": [94, 95, 96]
     }
 ]
 
